@@ -15,7 +15,7 @@ cd VARP_supplimental
 python VARP_decode.py --help 
 python VARP_decode.py "example_img.jpg" --save_by_bc True
 ~~~
-__Note:__ Due to dependency imports, the command line interface is expected to perform slighly slower than in the evaluations. During evaluations, all methods were instantiated before time tests since processing multiple images is the intended use-case.
+__Note:__ Due to dependency imports, the command line interface is expected to perform slighly slower than in the evaluations. During evaluations, all methods were instantiated before time tests which represents intended use-case conditions.
 
 ## Evaluation Process
 Results and source data for each image in the test dataset is documented in [data_set.csv](https://github.com/CapPow/VARP_supplimental/blob/master/data_set.csv).<br />
