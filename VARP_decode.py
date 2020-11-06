@@ -26,7 +26,6 @@ import os
 from deps.bcRead import *
 
 # set up argparsing
-
 parser = argparse.ArgumentParser(description="A simple command line interface "
                                 "for testing the VARP method on single images")
 
@@ -62,7 +61,7 @@ parser.add_argument('--extension_value', type=int,
 
 parser.add_argument('--use_fallbacks', type=bool,
                     default=True,
-                    help='optional bool, whether to use fallback methods if
+                    help='optional bool, whether to use fallback methods if '
                     'initially no barcode(s) are found (default: True)')
 
 # parse user arguments
