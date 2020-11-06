@@ -36,12 +36,12 @@ parser.add_argument('in_img', type=str,
 
 parser.add_argument('--keep_annotations', type=bool,
                     default=True,
-                    help='wheather to save annotated images which illustrate '
+                    help='whether to save annotated images which illustrate '
                     'the VARP process (default: True)')
 
 parser.add_argument('--save_by_bc', type=bool,
                     default=False,
-                    help='wheather to save a copy of the input image file, '
+                    help='whether to save a copy of the input image file, '
                     'named according to the decoded barcode value(s) (default:'
                     ' False)')
 
@@ -62,7 +62,7 @@ parser.add_argument('--extension_value', type=int,
 
 parser.add_argument('--use_fallbacks', type=bool,
                     default=True,
-                    help='wheather to use fallback methods if initially no '
+                    help='whether to use fallback methods if initially no '
                     'barcode(s) are found (default: True)')
 
 # parse user arguments
