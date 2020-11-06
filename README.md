@@ -18,5 +18,5 @@ python VARP_decode.py "example_img.jpg" --keep_annotations True, --save_by_bc Tr
 __Note:__ Due to dependency imports, the command line interface is expected to perform slighly slower than in the evaluations. During evaluations, all methods were instantiated before time tests since processing multiple images is intended use-case.
 
 ## Evaluation Process
-The evaluation process is documented in [VARP_evaluation.ipynb](https://github.com/CapPow/VARP_supplimental/blob/master/VARP_evaluation.ipynb).<br />
-Per image results, as well as source data for each image is documented in [data_set.csv](https://github.com/CapPow/VARP_supplimental/blob/master/data_set.csv).
+Results and source data for each image in the test dataset is documented in [data_set.csv](https://github.com/CapPow/VARP_supplimental/blob/master/data_set.csv).<br />
+The evaluation process is documented in [VARP_evaluation.ipynb](https://github.com/CapPow/VARP_supplimental/blob/master/VARP_evaluation.ipynb).
