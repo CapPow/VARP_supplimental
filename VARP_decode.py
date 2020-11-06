@@ -31,19 +31,19 @@ parser = argparse.ArgumentParser(description="A simple command line interface "
                                 "for testing the VARP method on single images")
 
 parser.add_argument('in_img', type=str,
-                    help='the path to the input image file. Note: expects a'
-                    'common derivative image format (e.g., jpg, png)')
+                    help='required path to the input image file. Note: expects'
+                    ' a common derivative image format (e.g., jpg, png)')
 
 parser.add_argument('--keep_annotations', type=bool,
                     default=True,
-                    help='whether to save annotated images which illustrate '
-                    'the VARP process (default: True)')
+                    help='optional bool, whether to save annotated images'
+                    'which illustrate the VARP process (default: True)')
 
 parser.add_argument('--save_by_bc', type=bool,
                     default=False,
-                    help='whether to save a copy of the input image file, '
-                    'named according to the decoded barcode value(s) (default:'
-                    ' False)')
+                    help='optional bool, whether to save a copy of the input '
+                    'image file named according to the decoded barcode '
+                    'value(s) (default: False)')
 
 parser.add_argument('--regex_pattern', type=str,
                     default="",
@@ -58,12 +58,12 @@ parser.add_argument('--extension_value', type=int,
                     help='optional integer representing vector extension '
                     'factor. Calculated as the smaller image dimension divided'
                     ' by the extension_value. Vector extensions are aplied on '
-                    'both sides of every identified rectangle. (default:6)')
+                    'each side of every identified rectangle. (default:6)')
 
 parser.add_argument('--use_fallbacks', type=bool,
                     default=True,
-                    help='whether to use fallback methods if initially no '
-                    'barcode(s) are found (default: True)')
+                    help='optional bool, whether to use fallback methods if
+                    'initially no barcode(s) are found (default: True)')
 
 # parse user arguments
 args = parser.parse_args()
