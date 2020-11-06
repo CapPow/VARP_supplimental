@@ -2,7 +2,7 @@
 Supplimental information for __Performant Barcode Decoding for Herbarium Specimen Images Using Vector Assisted Region Proposals (VARP)__
 
 ## Command Line Interface
-A simple command line interface is provided for VARP decoding. An example image ([example_img.jpg](https://github.com/CapPow/VARP_supplimental/blob/master/example_img.jpg)) is also provided. Users are encouraged to explore the available optional parameters which are explained in the "--help" documentation.
+A simple command line interface is provided for VARP decoding. An example image ([example_img.jpg](https://github.com/CapPow/VARP_supplimental/blob/master/example_img.jpg)) is also provided. Users are encouraged to explore the available optional parameters which are explained in the "--help" documentation. For example, using a too large extension value (e.g., 20) on the example image will reduce the composite image size but produce insufficient vectors and fail to decode. 
 
 
 Example usage: 
