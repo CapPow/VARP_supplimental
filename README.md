@@ -11,9 +11,9 @@ Example usage:
 git clone https://github.com/CapPow/VARP_supplimental/edit/master/README.md
 cd VARP_supplimental
 
-# check help documentation and decode the example image, using some optional parameters
+# check help documentation and decode the example image, using an optional parameter
 python VARP_decode.py --help 
-python VARP_decode.py "example_img.jpg" --keep_annotations True, --save_by_bc True
+python VARP_decode.py "example_img.jpg" --save_by_bc True
 ~~~
 __Note:__ Due to dependency imports, the command line interface is expected to perform slighly slower than in the evaluations. During evaluations, all methods were instantiated before time tests since processing multiple images is intended use-case.
 
