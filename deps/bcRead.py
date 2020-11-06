@@ -23,12 +23,6 @@ import re
 import numpy as np
 import cv2
 
-from math import cos as math_cos
-from math import sin as math_sin
-from math import radians
-import site
-from shutil import copyfile
-from platform import system
 from pylibdmtx.pylibdmtx import decode as libdmtx_decode
 # import the pyzbar fork (local)
 from .pyzbar.pyzbar import decode as zbar_decode
@@ -103,8 +97,8 @@ class bcRead():
     def decodeBC(self, img, verifyPattern=True, return_details=False):
         """ attempts to decode barcodes from an image array object.
 
-        Given a np array image object (img), decodes BCs and returns those
-        which match self.rePattern
+        Given a np array image object (img), decodes BCs and optionally 
+        returns those which match self.rePattern
 
         verifies if the bcData matches the compiled rePattern.
 
@@ -298,6 +292,9 @@ class bcRead():
         given a numpy array image attempts to identify all barcodes using
         vector extraction.
         """
+        
+        img = gray.copy()
+        gray = cv2.cvtColor(gray, cv2.COLOR_BGR2GRAY)
         # apparently this does not generalize well for very large resolutions
         h, w = gray.shape[0:2]
         if max(w,h) > 6800:
@@ -307,6 +304,10 @@ class bcRead():
 
         # ID squares
         squares = self.find_squares(gray)
+
+        cv2.drawContours(img, squares, -1, (0,255,0), 2)
+        cv2.imwrite("squares.jpg", img[4897:5682, 1352:3009, ...]) 
+        
         #print(f'found {len(squares)} squares.')
         if len(squares) < 1:
             z = zbar_decode(gray, y_density=3, x_density=3)
@@ -319,26 +320,29 @@ class bcRead():
             # extension happens in both directions, therefore effectively doubled.
             extend = min(h, w) // extension
             for square in squares:
+                
                 a, b, c, d = square
                 ab_mid = self.det_midpoint(a, b)
                 cd_mid = self.det_midpoint(c, d)
                 x1, y1, x2, y2 = self.extend_vector(ab_mid, cd_mid, h, w, extend=extend)
+
                 pix_coords = self.extract_vector_coords(x1, y1, x2, y2, h, w)
                 zi = gray[pix_coords]
                 line_data.append(zi)
-        
+
                 da_mid = self.det_midpoint(d, a)
                 bc_mid = self.det_midpoint(b, c)
                 x1, y1, x2, y2 = self.extend_vector(da_mid, bc_mid, h, w, extend=extend)
-        
-                pix_coords = self.extract_vector_coords(x1, y1, x2, y2, h, w)
+                pix_coords = self.extract_vector_coords(x1, y1, x2, y2, h, w) 
                 zi = gray[pix_coords]
                 line_data.append(zi)
         
             merged_lines = self.merge_proposals(line_data)
+
             #print(f'merged_lines shape = {merged_lines_shape}')
             z = zbar_decode(merged_lines, y_density=0, x_density=1)
-            if len(z) < 1:
+            # fallback methods if no results are found.
+            if len(z) < 1 and retry:
                 # first try darkening it
                 merged_lines = self.adjust_gamma(merged_lines, 0.8)
                 z = zbar_decode(merged_lines, y_density=0, x_density=1)
@@ -363,9 +367,113 @@ class bcRead():
                             z = self.extract_by_squares(gray, retry=False)
         return z
 
-    #### This method only exists to determine a typical resolution reduction
+    def extract_by_squares_with_annotation(self, gray, fname, retry=True,
+                                           extension=6):
+        """
+        This method only exists to produce a visual representation of the
+        VARP process.
+        """
+        base_fn = fname.rsplit(".", 1)[0]
+        retry_img = gray.copy()
+        img = gray.copy()
+        gray = cv2.cvtColor(gray, cv2.COLOR_BGR2GRAY)
+        # apparently this does not generalize well for very large resolutions
+        h, w = gray.shape[0:2]
+        if max(w,h) > 6800:
+            new_size = (int(w*0.8), int(h*0.8))
+            w, h = new_size
+            gray = cv2.resize(gray, new_size, interpolation=cv2.INTER_NEAREST)
+
+        # ID squares
+        squares = self.find_squares(gray)
+
+        # save the annotated squares (subfig "A")
+        cv2.drawContours(img, squares, -1, (0,255,0), 2)
+        squares_fn = base_fn + "_squares.jpg"
+        cv2.imwrite(squares_fn, img)
+        
+        #print(f'found {len(squares)} squares.')
+        if len(squares) < 1:
+            z = zbar_decode(gray, y_density=3, x_density=3)
+        else:
+            # iterate over each and det their midpoint intersects
+
+            h -= 1
+            w -= 1
+            line_data = []
+            # extension happens in both directions, therefore effectively doubled.
+            extend = min(h, w) // extension
+            for square in squares:
+                
+                a, b, c, d = square
+                ab_mid = self.det_midpoint(a, b)
+                cd_mid = self.det_midpoint(c, d)
+                x1, y1, x2, y2 = self.extend_vector(ab_mid, cd_mid, h, w, extend=extend)
+                
+                # annotate the extension
+                cv2.line(img, (int(x1), int(y1)), (int(x2), int(y2)), (255, 0, 0), thickness=1, lineType=8)
+                
+                pix_coords = self.extract_vector_coords(x1, y1, x2, y2, h, w)
+                zi = gray[pix_coords]
+                line_data.append(zi)
+
+                da_mid = self.det_midpoint(d, a)
+                bc_mid = self.det_midpoint(b, c)
+                x1, y1, x2, y2 = self.extend_vector(da_mid, bc_mid, h, w, extend=extend)
+                # annotate the extension
+
+                cv2.line(img, (int(x1), int(y1)), (int(x2), int(y2)), (255, 0, 0), thickness=1, lineType=8)
+                
+                pix_coords = self.extract_vector_coords(x1, y1, x2, y2, h, w) 
+                zi = gray[pix_coords]
+                line_data.append(zi)
+
+            # save the annotated vectors (subfig "B")
+            lines_fn = base_fn + "_vectors.jpg"
+            cv2.imwrite(lines_fn, img)
+       
+            merged_lines = self.merge_proposals(line_data)
+            
+            # save the resulting composite (subfig "C")
+            comp_fn = base_fn + "_composite.jpg"
+            cv2.imwrite(comp_fn, merged_lines) 
+
+            #print(f'merged_lines shape = {merged_lines_shape}')
+            z = zbar_decode(merged_lines, y_density=0, x_density=1)
+            if len(z) < 1 and retry:
+                print("Implimenting fallback methods:")
+                # first try darkening it
+                print("[fallback method]: darkening composite image")
+                merged_lines = self.adjust_gamma(merged_lines, 0.8)
+                z = zbar_decode(merged_lines, y_density=0, x_density=1)
+                if len(z) < 1:
+                    very_gamma_lines = self.adjust_gamma(merged_lines, 0.4)
+                    z = zbar_decode(very_gamma_lines, y_density=0, x_density=1)
+                    if len(z) < 1:
+                        print("[fallback method]: sharpening composite image")
+                        # if that fails try sharpening it
+                        blurred = cv2.GaussianBlur(merged_lines, (0, 0), 10)
+                        merged_lines = cv2.addWeighted(merged_lines, 2, blurred, -1, 0)
+                        z = zbar_decode(merged_lines, y_density=0, x_density=1)
+                    if len(z) < 1:
+                        # if all that fails squares again but with a darker img
+                        print("[fallback method]: darkening input image")
+                        gray = self.adjust_gamma(retry_img, 0.4)
+                        z = self.extract_by_squares_with_annotation(gray, fname, retry=False)
+                        if len(z) < 1:
+                            # if that fails, try squares on shrunk img
+                            print("[fallback method]: shrunk input image")
+                            o_w, o_h = gray.shape[0:2]
+                            new_size = (int(o_h * 0.8), int(o_w * 0.8))
+                            gray = cv2.resize(gray, new_size)
+                            #print(f'retrying with size {new_size}')
+                            z = self.extract_by_squares_with_annotation(gray, fname, retry=False)
+        return z
+ 
     def reduction_determination_extract_by_squares(self, gray, retry=True, extension=6):
         """
+        This method only exists to determine a typical resolution reduction
+        
         given a numpy array image attempts to identify all barcodes using
         vector extraction.
         """
