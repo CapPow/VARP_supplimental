@@ -443,31 +443,31 @@ class bcRead():
             if len(z) < 1 and retry:
                 print("Implimenting fallback methods:")
                 # first try darkening it
-                print("[fallback method]: darkening composite image")
+                print("  [fallback method]: darkening composite image")
                 merged_lines = self.adjust_gamma(merged_lines, 0.8)
                 z = zbar_decode(merged_lines, y_density=0, x_density=1)
                 if len(z) < 1:
                     very_gamma_lines = self.adjust_gamma(merged_lines, 0.4)
                     z = zbar_decode(very_gamma_lines, y_density=0, x_density=1)
                     if len(z) < 1:
-                        print("[fallback method]: sharpening composite image")
+                        print("  [fallback method]: sharpening composite image")
                         # if that fails try sharpening it
                         blurred = cv2.GaussianBlur(merged_lines, (0, 0), 10)
                         merged_lines = cv2.addWeighted(merged_lines, 2, blurred, -1, 0)
                         z = zbar_decode(merged_lines, y_density=0, x_density=1)
                     if len(z) < 1:
                         # if all that fails squares again but with a darker img
-                        print("[fallback method]: darkening input image")
+                        print("  [fallback method]: darkening input image")
                         gray = self.adjust_gamma(retry_img, 0.4)
-                        z = self.extract_by_squares_with_annotation(gray, fname, retry=False)
+                        z = self.extract_by_squares_with_annotation(gray, fname, retry=False, extension=extension)
                         if len(z) < 1:
                             # if that fails, try squares on shrunk img
-                            print("[fallback method]: shrunk input image")
+                            print("  [fallback method]: shrunk input image")
                             o_w, o_h = gray.shape[0:2]
                             new_size = (int(o_h * 0.8), int(o_w * 0.8))
                             gray = cv2.resize(gray, new_size)
                             #print(f'retrying with size {new_size}')
-                            z = self.extract_by_squares_with_annotation(gray, fname, retry=False)
+                            z = self.extract_by_squares_with_annotation(gray, fname, retry=False, extension=extension)
         return z
  
     def reduction_determination_extract_by_squares(self, gray, retry=True, extension=6):
@@ -533,14 +533,14 @@ class bcRead():
                     if len(z) < 1 & retry:
                         # if all that fails squares again but with a darker img
                         gray = self.adjust_gamma(gray, 0.4)
-                        z, reduction = self.reduction_determination_extract_by_squares(gray, retry=False)
+                        z, reduction = self.reduction_determination_extract_by_squares(gray, retry=False, extension=extension)
                         if len(z) < 1 & retry:
                             # if that fails, try squares on shrunk img
                             o_h, o_w = gray.shape[0:2]
                             new_size = (int(o_h * 0.8), int(o_w * 0.8))
                             gray = cv2.resize(gray, new_size, interpolation=cv2.INTER_NEAREST)
                             #print(f'retrying with size {new_size}')
-                            z, reduction = self.reduction_determination_extract_by_squares(gray, retry=False)
+                            z, reduction = self.reduction_determination_extract_by_squares(gray, retry=False, extension=extension)
         return z, reduction
 
     def det_res_reduction(self, o_h, o_w, m_h, m_w):
