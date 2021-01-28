@@ -19,6 +19,15 @@ pip install -r requirements.txt
 # check help documentation and decode the example image, using an optional parameter
 python VARP_decode.py --help 
 python VARP_decode.py "example_img.jpg" --save_by_bc True
+
+~~~
+This could be used with simple command line scripting to rename an entire directory.
+
+Bash example:
+~~~
+# decode all jpg files present in a nested subdirectory named "./imgs/"
+$for i in ./imgs/*.jpg;do python VARP_decode.py "$i" --save_by_bc True --keep_annotations False;done
+
 ~~~
 __Note:__ Due to dependency imports, the command line interface is expected to perform slighly slower than in the evaluations. During evaluations, all methods were instantiated before time tests which represents intended use-case conditions.
 
