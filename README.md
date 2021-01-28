@@ -1,6 +1,8 @@
 # VARP_supplimental
 Supplimental information for __Performant Barcode Decoding for Herbarium Specimen Images Using Vector Assisted Region Proposals (VARP)__
 
+__Note:__ All code provided in this repository was written in python 3.8
+
 ## Command Line Interface
 A simple command line interface is provided for VARP decoding. An example image ([example_img.jpg](https://github.com/CapPow/VARP_supplimental/blob/master/example_img.jpg)) is also provided. Users are encouraged to explore the available optional parameters which are explained in the "--help" documentation. For example, using a too large extension value (e.g., 20) on the example image will reduce the composite image size but produce insufficient vectors and fail to decode. 
 
@@ -8,8 +10,11 @@ A simple command line interface is provided for VARP decoding. An example image 
 Example usage: 
 ~~~
 # clone this repo and navigate to the new directory
-git clone https://github.com/CapPow/VARP_supplimental/edit/master/README.md
+git clone https://github.com/CapPow/VARP_supplimental
 cd VARP_supplimental
+
+# install dependencies
+pip install -r requirements.txt
 
 # check help documentation and decode the example image, using an optional parameter
 python VARP_decode.py --help 
