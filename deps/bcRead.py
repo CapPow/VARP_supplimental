@@ -306,7 +306,7 @@ class bcRead():
         squares = self.find_squares(gray)
 
         cv2.drawContours(img, squares, -1, (0,255,0), 2)
-        cv2.imwrite("squares.jpg", img[4897:5682, 1352:3009, ...]) 
+        #cv2.imwrite("squares.jpg", img[4897:5682, 1352:3009, ...]) 
         
         #print(f'found {len(squares)} squares.')
         if len(squares) < 1:

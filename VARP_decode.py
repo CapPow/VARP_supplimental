@@ -33,13 +33,13 @@ parser.add_argument('in_img', type=str,
                     help='required path to the input image file. Note: expects'
                     ' a common derivative image format (e.g., jpg, png)')
 
-parser.add_argument('--keep_annotations', type=bool,
-                    default=True,
+parser.add_argument('--keep_annotations', type=str,
+                    default="True",
                     help='optional bool, whether to save annotated images'
                     'which illustrate the VARP process (default: True)')
 
-parser.add_argument('--save_by_bc', type=bool,
-                    default=False,
+parser.add_argument('--save_by_bc', type=str,
+                    default="False",
                     help='optional bool, whether to save a copy of the input '
                     'image file named according to the decoded barcode '
                     'value(s) (default: False)')
@@ -59,13 +59,26 @@ parser.add_argument('--extension_value', type=int,
                     ' by the extension_value. Vector extensions are aplied on '
                     'each side of every identified rectangle. (default:6)')
 
-parser.add_argument('--use_fallbacks', type=bool,
-                    default=True,
+parser.add_argument('--use_fallbacks', type=str,
+                    default="True",
                     help='optional bool, whether to use fallback methods if '
                     'initially no barcode(s) are found (default: True)')
 
 # parse user arguments
 args = parser.parse_args()
+
+# adapt to goofy argparsing's handling of bool
+def str_to_bool(value):
+    """ convert the boolean inputs to actual bool objects"""
+    if value.lower() in {'false', 'f', '0', 'no', 'n'}:
+        return False
+    elif value.lower() in {'true', 't', '1', 'yes', 'y'}:
+        return True
+    raise ValueError(f'{value} is not a valid boolean value')
+
+args.keep_annotations = str_to_bool(args.keep_annotations)
+args.save_by_bc = str_to_bool(args.save_by_bc)
+args.use_fallbacks = str_to_bool(args.use_fallbacks)
 
 # load the input image file as an openCV array
 in_img = cv2.imread(args.in_img)
@@ -81,7 +94,6 @@ if args.keep_annotations:
                                                 extension=args.extension_value)
 else:
     codes = VARP_reader.extract_by_squares(in_img,
-                                           args.in_img,
                                            retry=args.use_fallbacks,
                                            extension=args.extension_value)
 
